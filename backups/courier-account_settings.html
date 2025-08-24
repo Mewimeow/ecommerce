@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders</title>
+  <link rel="stylesheet" href="../static/view-products.css">
+</head>
+<body>
+  <header>
+    <img src="../static/images/MIDLOGO.png" alt="Company Logo" class="logo">
+    <h1>Books, Bytes and Blockbusters - In transit</h1>
+  </header>
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <ul>
+      <li><a href="/courier-homepage">Dashboard</a></li>
+      <li><a href="/courier-orders">Orders</a></li>
+      <li><a href="/courier_tracking">Delivery Tracking</a></li>
+      <li><a href="/courier-support">Customer Support</a></li>
+      <li><a href="/courier-account" class="account-btn">Account Settings</a></li>
+    </ul>
+    <!-- Logout Button at Bottom -->
+    <div class="logout-btn">
+      <a href="/logout">Logout</a>
+    </div>
+  </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <h2>Manage Your Account Settings</h2><br>
+        <section class="account-settings">
+            
+            <!-- Change Email Section -->
+            <div class="settings-section">
+                <h3>Change Email</h3>
+                <form action="{{ url_for('courier_update_email') }}" method="POST" class="settings-form">
+                    <div class="form-group">
+                        <label for="new-email">Update Email:</label>
+                        <input type="email" id="new-email" name="new-email" placeholder="Enter new email" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Update Email</button>
+                </form>
+            </div>
+
+            <!-- Change Password Section -->
+            <div class="settings-section">
+                <h3>Change Password</h3>
+                <form action="{{ url_for('courier_update_password') }}" method="POST" class="settings-form">
+                    <div class="form-group">
+                        <label for="new_password">Change Password:</label>
+                        <input type="password" id="new_password" name="new_password" placeholder="Enter New password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Update Password</button>
+
+                </form>
+            </div>
+
+            <!-- Change Phone Number Section -->
+            <div class="settings-section">
+                <h3>Change Phone Number</h3>
+                <form action="{{ url_for('courier_update_phone') }}" method="POST" class="settings-form">
+                    <div class="form-group">
+                        <label for="new-phone">Change Phone Number:</label>
+                        <input type="text" id="new-phone" name="new-phone" placeholder="Enter new phone number" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Update Phone Number</button>
+                </form>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Confirm Update</h2>
+            <p id="modalMessage">Are you sure you want to proceed with this update?</p>
+            <div class="modal-buttons">
+                <button id="confirmButton" class="confirm-btn" onclick="submitUpdate()">Confirm</button>
+                <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeSuccessModal()">&times;</span>
+            <h2>Update Successful!</h2>
+            <p>Your information has been updated successfully.</p>
+            <button onclick="closeSuccessModal()" class="confirm-btn">OK</button>
+        </div>
+    </div>
+
+
+    <script>
+        let currentForm = null;
+    
+    // Show confirmation modal
+    function showModal(form) {
+        currentForm = form;
+        document.getElementById("confirmationModal").style.display = "flex";
+        document.getElementById("modalTitle").textContent = "Confirm Update";
+        document.getElementById("modalMessage").textContent = "Are you sure you want to proceed with this update?";
+    }
+    
+    // Close confirmation modal
+    function closeModal() {
+        document.getElementById("confirmationModal").style.display = "none";
+    }
+    
+    // Show success modal
+    function showSuccessModal() {
+        document.getElementById("successModal").style.display = "flex";
+    }
+    
+    // Close success modal
+    function closeSuccessModal() {
+        document.getElementById("successModal").style.display = "none";
+    }
+    
+    // Submit update with AJAX and show success message
+    function submitUpdate() {
+        closeModal();
+    
+        if (currentForm) {
+            // Use AJAX to submit the form without refreshing the page
+            const formData = new FormData(currentForm);
+            const actionUrl = currentForm.action;
+    
+            fetch(actionUrl, {
+                method: currentForm.method,
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    showSuccessModal(); // Show success modal on successful submission
+                } else {
+                    alert("Failed to update. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            });
+        }
+    }
+    
+    // Attach the showModal function to each form's submit event
+    document.querySelectorAll(".settings-form").forEach(form => {
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent actual form submission
+            showModal(this); // Show confirmation modal and pass the form reference
+        });
+    });
+    </script>
+
+</body>
+</html>
+
